@@ -1,35 +1,94 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Random Posts</title>
-<meta content='width=device-width, initial-scale=1' name='viewport'>
-<style>
-body {
-  background-color:transparent;
-  margin:0;
-  padding:0;
-  overflow:hidden;
+<b:if cond='data:blog.pageType == &quot;item&quot;'>
+<div class='similiar'>
+
+<div style='overflow: auto;border: 1px #000000 solid; background-color:#414141; margin: 0px auto; padding: 5px; height: 200px;width: 98%;text-align: left;'>
+<div class='widget-content'>
+<div id='data2007'/><br/><br/>
+<script type='text/javascript'>
+
+var homeUrl3 = &quot;<data:blog.homepageUrl/>&quot;;
+var maxNumberOfPostsPerLabel = 4;
+var maxNumberOfLabels = 10;
+
+maxNumberOfPostsPerLabel = 20;
+maxNumberOfLabels = 3;
+
+
+function listEntries10(json) {
+var ul = document.createElement(&#39;ul&#39;);
+var maxPosts = (json.feed.entry.length &lt;= maxNumberOfPostsPerLabel) ?
+json.feed.entry.length : maxNumberOfPostsPerLabel;
+for (var i = 0; i &lt; maxPosts; i++) {
+var entry = json.feed.entry[i];
+var alturl;
+
+for (var k = 0; k &lt; entry.link.length; k++) {
+if (entry.link[k].rel == &#39;alternate&#39;) {
+alturl = entry.link[k].href;
+break;
 }
-iframe{border:0;}
-</style>
-<script>
-function getQueryVariable(variable) {
-	var query = window.location.search.substring(1);
-	var vars = query.split("&");
-	for (var i=0;i<vars.length;i++) {
-		var pair = vars[i].split("=");
-		if(pair[0] == variable){return pair[1];}
-	}
-	return(false);
 }
-var domain = getQueryVariable("url");
-var labels = getQueryVariable("label");
+var li = document.createElement(&#39;li&#39;);
+var a = document.createElement(&#39;a&#39;);
+a.href = alturl;
+
+if(a.href!=location.href) {
+var txt = document.createTextNode(entry.title.$t);
+a.appendChild(txt);
+li.appendChild(a);
+ul.appendChild(li);
+}
+}
+for (var l = 0; l &lt; json.feed.link.length; l++) {
+if (json.feed.link[l].rel == &#39;alternate&#39;) {
+var raw = json.feed.link[l].href;
+var label = raw.substr(homeUrl3.length+13);
+var k;
+for (k=0; k&lt;20; k++) label = label.replace(&quot;%20&quot;, &quot; &quot;);
+var txt = document.createTextNode(label);
+var h = document.createElement(&#39;b&#39;);
+h.appendChild(txt);
+var div1 = document.createElement(&#39;div&#39;);
+div1.appendChild(h);
+div1.appendChild(ul);
+document.getElementById(&#39;data2007&#39;).appendChild(div1);
+}
+}
+}
+function search10(query, label) {
+
+var script = document.createElement(&#39;script&#39;);
+script.setAttribute(&#39;src&#39;, query + &#39;feeds/posts/default/-/&#39;
++ label +
+&#39;?alt=json-in-script&amp;callback=listEntries10&#39;);
+script.setAttribute(&#39;type&#39;, &#39;text/javascript&#39;);
+document.documentElement.firstChild.appendChild(script);
+}
+
+var labelArray = new Array();
+var numLabel = 0;
+
+<b:loop values='data:posts' var='post'>
+<b:loop values='data:post.labels' var='label'>
+textLabel = &quot;<data:label.name/>&quot;;
+
+var test = 0;
+for (var i = 0; i &lt; labelArray.length; i++)
+if (labelArray[i] == textLabel) test = 1;
+if (test == 0) {
+labelArray.push(textLabel);
+var maxLabels = (labelArray.length &lt;= maxNumberOfLabels) ?
+labelArray.length : maxNumberOfLabels;
+if (numLabel &lt; maxLabels) {
+search10(homeUrl3, textLabel);
+numLabel++;
+}
+}
+</b:loop>
+</b:loop>
 </script>
-</head>
-<body>
-<script>
-document.write('<iframe src="https://feed.mikle.com/widget/v2/?widget_parameter=%7B%22type%22%3A%22%22%2C%22sources%22%3A%5B%7B%22source%22%3A%22http%3A%2F%2F'+domain+'%2Ffeeds%2Fposts%2Fdefault%2F-%2F'+labels+'%22%2C%22type%22%3A%22RSS%22%7D%5D%2C%22name%22%3A%22%22%2C%22width%22%3A0%2C%22height%22%3A%22700%22%2C%22height_by_article%22%3A0%2C%22target%22%3A%22_blank%22%2C%22font%22%3A%22Arial%2C%20Helvetica%2C%20sans-serif%22%2C%22title_font_size%22%3A%2216%22%2C%22item_title_font_size%22%3A%2216%22%2C%22item_description_font_size%22%3A%2214%22%2C%22border%22%3A%22off%22%2C%22css_url%22%3A%22https%3A%2F%2Fcdn.rawgit.com%2FKompiAjaib%2Fkompi-html%2Fmaster%2Ffreewind6.css%22%2C%22responsive%22%3A%22on%22%2C%22text_direction%22%3A%22left%22%2C%22text_alignment%22%3A%22left%22%2C%22corner%22%3A%22square%22%2C%22scroll%22%3A%22on%22%2C%22auto_scroll%22%3A%22on%22%2C%22auto_scroll_direction%22%3A%22up%22%2C%22auto_scroll_step_speed%22%3A%224%22%2C%22auto_scroll_mc_speed%22%3A%2220%22%2C%22sort%22%3A%22rnd%22%2C%22title%22%3A%22off%22%2C%22title_sentence%22%3A%22%22%2C%22title_link%22%3A%22%22%2C%22title_bgcolor%22%3A%22%23ffffff%22%2C%22title_color%22%3A%22%23505659%22%2C%22title_bgimage%22%3A%22%22%2C%22item_bgcolor%22%3A%22%23ffffff%22%2C%22item_bgimage%22%3A%22%22%2C%22item_title_length%22%3A%22200%22%2C%22item_title_color%22%3A%22%23222222%22%2C%22item_border_bottom%22%3A%22on%22%2C%22item_description%22%3A%22title_only%22%2C%22item_link%22%3A%22off%22%2C%22item_description_length%22%3A%22150%22%2C%22item_description_color%22%3A%22%23505659%22%2C%22item_date%22%3A%22off%22%2C%22item_date_format%22%3A%22%25b%20%25e%2C%20%25Y%20%25k%3A%25M%22%2C%22item_date_timezone%22%3A%22%22%2C%22item_description_style%22%3A%22thumbnail%22%2C%22item_thumbnail%22%3A%22crop%22%2C%22item_thumbnail_selection%22%3A%22auto%22%2C%22article_num%22%3A%229999%22%2C%22item_player%22%3A%22youtube%22%2C%22keyword_inc%22%3A%22%22%2C%22keyword_exc%22%3A%22%22%7D" scrolling="no" style="width:100%;height:620px;overflow:hidden;"/>');
-</script>
-</body>
-</html>
+</div>
+</div>
+
+</div>
+</b:if><br/>
